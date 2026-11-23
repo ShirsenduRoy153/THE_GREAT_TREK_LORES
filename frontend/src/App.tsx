@@ -25,6 +25,7 @@ import { GroupDetailsModal } from './components/GroupDetailsModal';
 import { TrekDetailsModal } from './components/TrekDetailsModal';
 import { OrganizerInboxModal } from './components/OrganizerInboxModal';
 import { ChatModal } from './components/ChatModal';
+import { NotificationDropdown } from './components/NotificationDropdown';
 import type { TripGroupSummary, TrekListingSummary } from './types/trek';
 
 export function App() {
@@ -125,6 +126,7 @@ export function App() {
             {/* Auth Buttons */}
             {isAuthenticated && user ? (
               <div className="flex items-center gap-2">
+                <NotificationDropdown />
                 <button
                   onClick={() => setChatModalOpen(true)}
                   className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-emerald-400 px-3 py-1.5 rounded-lg transition"

@@ -1,0 +1,35 @@
+# ==============================================================================
+# Render Blueprint Specification (Infrastructure as Code)
+# The Great Trek Lores — 100% Zero-Cost Portfolio Deployment
+# ==============================================================================
+
+services:
+  # Spring Boot Backend Service (Free Web Service)
+  - type: web
+    name: the-great-trek-lores-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon # or frankfurt / singapore
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        sync: false # Set to Neon PostgreSQL connection URL (e.g. jdbc:postgresql://ep-xyz.neon.tech/neondb?sslmode=require)
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://the-great-trek-lores.vercel.app,http://localhost:5173
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

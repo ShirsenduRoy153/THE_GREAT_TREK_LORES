@@ -279,6 +279,26 @@ Submit an abuse or spam report.
 }
 ```
 
+### `GET /api/notifications`
+Fetch all in-app notifications for the authenticated user.
+* **Access:** Authenticated
+
+### `PATCH /api/notifications/{id}/read`
+Mark a single notification as read.
+* **Access:** Authenticated (Recipient only)
+
+### `PATCH /api/notifications/read-all`
+Mark all notifications for the authenticated user as read.
+* **Access:** Authenticated
+
 ### `GET /api/admin/reports`
 List open reports for platform moderation.
+* **Access:** `ADMIN` role only.
+
+### `PATCH /api/admin/reports/{id}/resolve`
+Resolve a reported issue and record admin action.
+* **Access:** `ADMIN` role only.
+
+### `PATCH /api/admin/reports/{id}/dismiss`
+Dismiss a false report.
 * **Access:** `ADMIN` role only.

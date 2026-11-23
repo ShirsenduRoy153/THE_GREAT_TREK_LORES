@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { X, Users, Calendar, MapPin, Check, XCircle, Clock, Sparkles, Send, ShieldCheck, MessageSquare } from 'lucide-react';
+import { X, Users, Calendar, MapPin, Check, XCircle, Clock, Sparkles, Send, ShieldCheck, MessageSquare, Flag } from 'lucide-react';
 import { apiClient, type ApiResponse } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { ReportModal } from './ReportModal';
 import type { TripGroupDetail, TrekDeparture, MembershipStatus } from '../types/trek';
 import type { ConnectionDto, ConnectionStatus } from '../types/connection';
 
@@ -21,6 +22,7 @@ export const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ groupId, o
   const [actionLoading, setActionLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'MEMBERS' | 'MATCHES' | 'CONNECTIONS'>('MEMBERS');
   const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   useEffect(() => {
     if (groupId) {
@@ -149,9 +151,18 @@ export const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ groupId, o
                 </span>
               </div>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setReportModalOpen(true)}
+                className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition"
+                title="Report Group"
+              >
+                <Flag className="w-4 h-4" />
+              </button>
+              <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -442,6 +453,14 @@ export const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ groupId, o
           )}
         </div>
       </div>
+
+      <ReportModal
+        isOpen={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        targetType="GROUP"
+        targetId={group.id}
+        targetTitle={group.name}
+      />
     </div>
   );
 };

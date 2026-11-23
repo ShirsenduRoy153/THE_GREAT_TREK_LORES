@@ -31,6 +31,7 @@ public class ConnectionService {
     private final OrganizerRepository organizerRepository;
     private final GroupMembershipRepository membershipRepository;
     private final com.thegreattreklores.chat.service.ChatService chatService;
+    private final com.thegreattreklores.notification.service.NotificationService notificationService;
 
     @Transactional
     public ConnectionDto createGroupEnquiry(UUID groupId, UUID organizerId, UUID adminUserId, String message) {
@@ -67,7 +68,18 @@ public class ConnectionService {
                 .status(ConnectionStatus.PENDING)
                 .build();
 
-        return mapToDto(connectionRepository.save(connection));
+        connection = connectionRepository.save(connection);
+
+        notificationService.sendNotification(
+                organizer.getOwnerUser(),
+                com.thegreattreklores.notification.enums.NotificationType.CONNECTION_ENQUIRY,
+                "New Group Inquiry",
+                group.getName() + " has sent an inquiry to your team.",
+                "CONNECTION",
+                connection.getId()
+        );
+
+        return mapToDto(connection);
     }
 
     @Transactional
@@ -102,7 +114,18 @@ public class ConnectionService {
                 .status(ConnectionStatus.PENDING)
                 .build();
 
-        return mapToDto(connectionRepository.save(connection));
+        connection = connectionRepository.save(connection);
+
+        notificationService.sendNotification(
+                group.getCreatedByUser(),
+                com.thegreattreklores.notification.enums.NotificationType.CONNECTION_PITCH,
+                "New Organizer Pitch",
+                organizer.getOrganizerName() + " has pitched a departure package to your group.",
+                "CONNECTION",
+                connection.getId()
+        );
+
+        return mapToDto(connection);
     }
 
     @Transactional
@@ -137,7 +160,40 @@ public class ConnectionService {
         }
 
         connection.setStatus(newStatus);
-        return mapToDto(connectionRepository.save(connection));
+        connection = connectionRepository.save(connection);
+
+        if (newStatus == ConnectionStatus.ACCEPTED) {
+            if (connection.getInitiatedBy() == ConnectionInitiator.GROUP) {
+                notificationService.sendNotification(
+                        connection.getGroup().getCreatedByUser(),
+                        com.thegreattreklores.notification.enums.NotificationType.CONNECTION_ACCEPTED,
+                        "Connection Accepted",
+                        connection.getOrganizer().getOrganizerName() + " has accepted your group's enquiry. Organizer discussion room is now open!",
+                        "CONNECTION",
+                        connection.getId()
+                );
+            } else {
+                notificationService.sendNotification(
+                        connection.getOrganizer().getOwnerUser(),
+                        com.thegreattreklores.notification.enums.NotificationType.CONNECTION_ACCEPTED,
+                        "Pitch Accepted",
+                        connection.getGroup().getName() + " has accepted your pitch! Organizer discussion room is now open.",
+                        "CONNECTION",
+                        connection.getId()
+                );
+            }
+        } else if (newStatus == ConnectionStatus.CONFIRMED) {
+            notificationService.sendNotification(
+                    connection.getOrganizer().getOwnerUser(),
+                    com.thegreattreklores.notification.enums.NotificationType.CONNECTION_CONFIRMED,
+                    "Organizer Confirmed! 🎉",
+                    connection.getGroup().getName() + " has officially confirmed your organization for their trek!",
+                    "CONNECTION",
+                    connection.getId()
+            );
+        }
+
+        return mapToDto(connection);
     }
 
     @Transactional(readOnly = true)

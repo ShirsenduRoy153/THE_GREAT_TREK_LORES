@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { X, Calendar, MapPin } from 'lucide-react';
+import { X, Calendar, MapPin, Flag } from 'lucide-react';
 import { apiClient, type ApiResponse } from '../api/client';
+import { ReportModal } from './ReportModal';
 import type { TrekListingDetail } from '../types/trek';
 
 interface TrekDetailsModalProps {
@@ -11,6 +12,7 @@ interface TrekDetailsModalProps {
 export const TrekDetailsModal: React.FC<TrekDetailsModalProps> = ({ trekId, onClose }) => {
   const [trek, setTrek] = useState<TrekListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   useEffect(() => {
     if (trekId) {
@@ -57,9 +59,18 @@ export const TrekDetailsModal: React.FC<TrekDetailsModalProps> = ({ trekId, onCl
                 </span>
               </div>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setReportModalOpen(true)}
+                className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition"
+                title="Report Listing"
+              >
+                <Flag className="w-4 h-4" />
+              </button>
+              <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -119,6 +130,14 @@ export const TrekDetailsModal: React.FC<TrekDetailsModalProps> = ({ trekId, onCl
           )}
         </div>
       </div>
+
+      <ReportModal
+        isOpen={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        targetType="ORGANIZER"
+        targetId={trek.organizer.id}
+        targetTitle={`${trek.title} (${trek.organizer.organizerName})`}
+      />
     </div>
   );
 };

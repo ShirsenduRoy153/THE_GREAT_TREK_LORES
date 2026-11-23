@@ -32,6 +32,7 @@ public class GroupService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final com.thegreattreklores.chat.service.ChatService chatService;
+    private final com.thegreattreklores.notification.service.NotificationService notificationService;
 
     @Transactional
     public GroupSummaryDto createGroup(UUID userId, CreateGroupRequest request) {
@@ -191,6 +192,17 @@ public class GroupService {
                 .build();
 
         membership = membershipRepository.save(membership);
+
+        // Notify Group Admin
+        notificationService.sendNotification(
+                group.getCreatedByUser(),
+                com.thegreattreklores.notification.enums.NotificationType.JOIN_REQUEST,
+                "New Join Request",
+                user.getEmail() + " requested to join " + group.getName(),
+                "GROUP",
+                group.getId()
+        );
+
         return mapToMembershipDto(membership);
     }
 
@@ -218,6 +230,14 @@ public class GroupService {
         if (newStatus == MembershipStatus.ACCEPTED) {
             target.setJoinedAt(Instant.now());
             chatService.addMemberToGroupRooms(groupId, target.getUser(), com.thegreattreklores.chat.enums.ParticipantRole.MEMBER);
+            notificationService.sendNotification(
+                    target.getUser(),
+                    com.thegreattreklores.notification.enums.NotificationType.JOIN_ACCEPTED,
+                    "Join Request Approved!",
+                    "You are now a companion in " + group.getName() + ". You can now chat in the private group room!",
+                    "GROUP",
+                    group.getId()
+            );
         } else if (newStatus == MembershipStatus.REJECTED || newStatus == MembershipStatus.REMOVED || newStatus == MembershipStatus.LEFT) {
             chatService.removeMemberFromGroupRooms(groupId, target.getUser().getId());
         }
