@@ -74,9 +74,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const quickDemoLogin = async (role: UserRole) => {
     const demoCredentials: Record<UserRole, { email: string; pass: string; name: string }> = {
-      USER: { email: 'alex.trekker@demo.com', pass: 'demoPass123!', name: 'Alex Rivers (Trekker)' },
-      ORGANIZER: { email: 'mountain.trails@demo.com', pass: 'demoPass123!', name: 'Mountain Trails (Guide)' },
-      ADMIN: { email: 'admin@thegreattreklores.com', pass: 'demoPass123!', name: 'Platform Admin' },
+      USER: { email: 'trekker@demo.com', pass: 'password123', name: 'Aarav Sharma (Trekker)' },
+      ORGANIZER: { email: 'organizer@demo.com', pass: 'password123', name: 'Vikram Negi (Guide)' },
+      ADMIN: { email: 'admin@demo.com', pass: 'password123', name: 'Safety Admin' },
     };
 
     const creds = demoCredentials[role];
